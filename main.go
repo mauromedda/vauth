@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/mauromedda/vauth/command"
+	"github.com/mauromedda/vauth/cli"
 )
 
 func main() {
-	os.Exit(command.Run(os.Args[1:]))
+	os.Exit(cli.Run(os.Args[1:]))
 }
