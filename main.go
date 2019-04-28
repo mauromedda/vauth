@@ -1,11 +1,7 @@
 package main
 
-import (
-	"os"
-
-	"github.com/mauromedda/vauth/cli"
-)
+import "github.com/mauromedda/vauth/command"
 
 func main() {
-	os.Exit(cli.Run(os.Args[1:]))
+	command.Execute()
 }
