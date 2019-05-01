@@ -40,13 +40,9 @@ var LoginHandlers = map[string]LoginHandler{
 	},
 }
 
-// Login function returns a vault token or an error
-func Login(cmd *cobra.Command, method string, loginConfig map[string]string) error {
-	config := api.DefaultConfig()
-	if err := config.ReadEnvironment(); err != nil {
-		return fmt.Errorf("%s failed to read environment", err)
-	}
-	client, err := api.NewClient(config)
+// Login function returns an error o print the token saved inside the ~/.vault-token file
+func Login(client *api.Client, method string, loginConfig map[string]string, out io.Writer) error {
+	authConfig := map[string]string{}
 	clih, ok := LoginHandlers[method]
 	if !ok {
 		return fmt.Errorf("%s method not supported", method)
@@ -63,18 +59,17 @@ func Login(cmd *cobra.Command, method string, loginConfig map[string]string) err
 		if !ok {
 			password = PasswordFromEnv()
 		}
-		authConfig := map[string]string{
+		authConfig = map[string]string{
 			"username": username,
 			"password": password,
 			"method":   method,
 		}
-		for k, v := range authConfig {
-			loginConfig[k] = v
+		for k, v := range loginConfig {
+			authConfig[k] = v
 		}
 	}
-	sec, err := clih.Auth(client, loginConfig)
+	sec, err := clih.Auth(client, authConfig)
 	if err != nil {
-		cmd.SilenceUsage = true
 		return fmt.Errorf("%s\n%s", err, clih.Help())
 	}
 
@@ -88,17 +83,24 @@ func Login(cmd *cobra.Command, method string, loginConfig map[string]string) err
 	tokenHelper.PopulateTokenPath()
 
 	if err := tokenHelper.Store(tokenID); err != nil {
-		fmt.Printf("Error storing token: %s", err)
+		fmt.Fprintf(out, "Error storing token: %s", err)
 		return fmt.Errorf(
-			"Authentication was successful, but the token was not persisted. The " +
-				"resulting token is shown below for your records.\n")
+			"Authentication was successful, but the token was not persisted. The "+
+				"resulting token is shown below for your records.\n"+
+				"TokenID: %s", tokenID)
 	}
-	fmt.Printf("Token ID: %s\n", tokenID)
+	fmt.Fprintf(out, `Success! You are now authenticated. The token information displayed
+below is already stored in the token helper. You do NOT need to run
+"vauth login" again. Future Vault requests will automatically use this token.
+TokenID: %s
+
+`, tokenID)
 	return nil
 }
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
+	loginCmd.Flags().StringP("method", "m", "", "Authentication method for Vault")
 }
 
 var loginCmd = &cobra.Command{
@@ -120,18 +122,18 @@ Valid methods are: aws, ldap, token, userpass, radius, github, okta and cert.
 		}
 		// Pull the Hashicorp Vault fake stdin if needed
 		stdin := (io.Reader)(os.Stdin)
+		stdout := os.Stdout
 		authConfig, err := parseArgsDataString(stdin, cmd.Flags().Args())
 		if err != nil {
 			return err
 		}
-		return Login(cmd, method, authConfig)
 
+		client, err := NewClient(nil)
+
+		if err := Login(client, method, authConfig, stdout); err != nil {
+			cmd.SilenceUsage = true
+			return err
+		}
+		return nil
 	},
-}
-
-// Method identify the login method used by the LoginCommand function
-var Method string
-
-func init() {
-	loginCmd.Flags().StringVarP(&Method, "method", "m", "", "Authentication method for Vault")
 }
