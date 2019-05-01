@@ -1,12 +1,26 @@
 package command
 
 import (
+	"fmt"
+	"github.com/hashicorp/vault/api"
 	kvbuilder "github.com/hashicorp/vault/helper/kv-builder"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"io"
 	"os"
 )
+
+// NewClient return a new vault client and an error
+func NewClient(config *api.Config) (*api.Client, error) {
+	if config == nil {
+		config = api.DefaultConfig()
+	}
+	if err := config.ReadEnvironment(); err != nil {
+		return nil, fmt.Errorf("%s failed to read environment", err)
+	}
+	client, err := api.NewClient(config)
+	return client, err
+}
 
 // parseArgsData parses the given args in the format key=value into a map of
 // the provided arguments. The given reader can also supply key=value pairs.
