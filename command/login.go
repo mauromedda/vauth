@@ -103,7 +103,7 @@ func init() {
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "Authenticate against Vault",
+	Short: "Authenticate clients against Vault",
 	Long: `This subcommand authenticate the client to Vault using the provided method.
 The login sub-command and the related methods accept the same parameter of the mainstream Hashicorp Vault CLI.
 
