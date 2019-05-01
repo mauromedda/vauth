@@ -40,7 +40,7 @@ var LoginHandlers = map[string]LoginHandler{
 	},
 }
 
-// Login function returns an the token or an error
+// Login function returns a vault token or an error
 func Login(cmd *cobra.Command, method string, loginConfig map[string]string) error {
 	config := api.DefaultConfig()
 	if err := config.ReadEnvironment(); err != nil {
