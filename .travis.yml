@@ -1,23 +1,24 @@
 dist: trusty
 sudo: required
 services:
-  - docker
+- docker
 language: go
 go:
 - 1.12.4
-
 git:
   depth: 1
-
 script:
 - make test
 - make vet
 - make build
-
+- make release
 branches:
   only:
-  - master
+  - "master"
 matrix:
   fast_finish: true
   allow_failures:
   - go: tip
+env:
+  global:
+    secure: t49vOn1SIgN9QilKm2L/kGsrYa54w43b6kEpnAYcltWy8pptH11Kzj9KFpb80UrPEx5if48S60P/DZpmM47F8OHXowUirmHH7bSFMKzuvKDvd7rL0+aHWX2LyhOCdgZhhW1/81Kw0i9eGqLEhDhyowWwD3ZGhReWnzW1H+tTSx70BrHQfBDRBaOMAfUZCko9ecJ0VgzF0t09LDQ3IUmfHR/IiLhRTst1heSZccSW7tIOTSE+thOcodj4f6JC2+1mmcyvkROdFk1y1WgBr5QnhqQx6rAnyXsqOWqG4IQwdJV1vPkgTrdVFE0w3/7bTq9eA91CACnIcA8DXUbtBD7OqM3AXPZd2WMn5zCjCMGbrTWIl7ldmQNfQwNryZ4msY1LHxtzU20jzD/TfIDAp6oQGP8f8JbEoJTTFHy6QaIrCy6PTue4GM053VojPKOn4s+daVQLBSFe61dYIIYcvJ0kMR5kj87D1I/ISxxPZjOYT63g52IvQ9ATvPYjLtGLRDKOBz2t/aJ35CRRitcvrsaJ2idPQ5ZkOKFhlPBCBznxwq4BoZAXdSHpkfeB7S3CDa6OAM0b3JE4ggNOg8YLI1x0pgUoG/A/DNAVNjsdt4Frh7nPEznr7iVohuAnkxk1PE+ymuSv3HgmpcWFMCKYBjdSViQ5NNguQzfrFtJDv/yvgIo=

@@ -1,10 +1,16 @@
 # vauth
 
-vauth is a simple Hashicorp Vault login CLI.
+[![Build Status](https://travis-ci.org/mauromedda/vauth.svg?branch=master)](https://travis-ci.org/mauromedda/vauth)
+
+vauth is a simple Hashicorp Vault login CLI wrapper.
+
+> Inspired by the Hashicorp vault project.
+
+> Thanks to the [Vault](https://github.com/hashicorp/vault) community and to [hashicorp](https://hashicorp.com/)
 
 vauth has been created to have a ligthweight version of the login client for [Hashicorp Vault](https://vaultproject.io/) to be used in  CICD pipelines and containarised workflow without install the full vault binary.
 
-It supports the core vault authentication methods:
+It supports the following core Hashicorp Vault [authentication methods](https://www.vaultproject.io/docs/auth/):
 
 ```go
     credAws "github.com/hashicorp/vault/builtin/credential/aws"
@@ -20,3 +26,20 @@ It's implemented using [spf13/cobra](https://github.com/spf13/cobra).
 
 The help documentation provided by the different login methods are the native vault messages.
 
+## Install
+
+```bash
+
+# TBD
+```
+
+## Usage
+
+```bash
+
+# TBD
+```
+
+## Authors
+
+Currently maintained by [Mauro Medda](https://github.com/mauromedda).

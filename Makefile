@@ -29,6 +29,8 @@ vet:
 
 # prepare the build and test environment downloading external (not vendored dependencies)
 prep:
+	# download the git history and tags information
+	git fetch --tags
 	# gox simplifies building for multiple architectures
 	echo => Install gox
 	go get github.com/mitchellh/gox
