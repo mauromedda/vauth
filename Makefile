@@ -48,5 +48,5 @@ test:
 	VAULT_ACC= \
 	go test -tags='$(BUILD_TAGS)' $(TEST) $(TESTARGS) -timeout=$(TEST_TIMEOUT) -parallel=20 -v
 
-release: prep
+release:
 	./release.sh
