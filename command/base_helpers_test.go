@@ -102,3 +102,47 @@ func TestParseArgsData(t *testing.T) {
 		}
 	})
 }
+
+func TestUsernameFromEnv(t *testing.T) {
+	userTests := []struct {
+		name string
+		env  string
+		want string
+	}{
+		{name: "Test LOGNAME", env: "LOGNAME", want: "test"},
+		{name: "Test USER", env: "USER", want: "test"},
+		{name: "Test empty", env: "", want: ""},
+	}
+	for _, tt := range userTests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Unsetenv("LOGNAME")
+			os.Unsetenv("USER")
+			os.Setenv(tt.env, tt.want)
+			got := UsernameFromEnv()
+			if got != tt.want {
+				t.Errorf("got %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPasswordFromEnv(t *testing.T) {
+	passwordTests := []struct {
+		name string
+		env  string
+		want string
+	}{
+		{name: "Test PASSWORD", env: "PASSWORD", want: "test"},
+		{name: "Test empty password", env: "", want: ""},
+	}
+	for _, tt := range passwordTests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Unsetenv("PASSWORD")
+			os.Setenv(tt.env, tt.want)
+			got := PasswordFromEnv()
+			if got != tt.want {
+				t.Errorf("got %s, want %s", got, tt.want)
+			}
+		})
+	}
+}

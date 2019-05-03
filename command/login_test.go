@@ -1,16 +1,16 @@
 package command
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/hashicorp/vault/api"
-	"github.com/spf13/cobra"
 	testcontainers "github.com/testcontainers/testcontainers-go"
-
+	"strings"
 	"testing"
 )
 
-func TestLogin(t *testing.T) {
+func TestLoginSuccess(t *testing.T) {
 	token := "s6gjRs4pYBO4pyDGyp73e8Zmt"
 	ctx := context.Background()
 	req := testcontainers.ContainerRequest{
@@ -63,12 +63,16 @@ func TestLogin(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	cmd := &cobra.Command{}
-	cmd.Flags().String("method", "", "Authentication method for Vault")
-	cmd.Flags().Lookup("method").Value.Set("userpass")
-	cmd.SetArgs([]string{"username=test", "password=test"})
-	if err := Login(client, "userpass", map[string]string{"username": "test", "password": "test"}); err != nil {
+	got := &bytes.Buffer{}
+	if err := Login(client, "userpass", map[string]string{"username": "test", "password": "test"}, got); err != nil {
 		t.Fatal(err)
 	}
+	want := "Success! You are now authenticated."
+	if !strings.Contains(got.String(), want) {
+		t.Errorf("expected %q to be %q", got, want)
+	}
 
+	if err := Login(client, "userpass", map[string]string{"username": "testWrong", "password": "test"}, got); err == nil {
+		t.Fatal("expected login failed but success")
+	}
 }
