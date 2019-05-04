@@ -67,6 +67,8 @@ func Login(client *api.Client, method string, loginConfig map[string]string, out
 		for k, v := range loginConfig {
 			authConfig[k] = v
 		}
+	} else {
+		authConfig = loginConfig
 	}
 	sec, err := clih.Auth(client, authConfig)
 	if err != nil {

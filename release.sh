@@ -16,12 +16,11 @@ if [[ -z "${GITHUB_TOKEN}" ]]; then
   exit 1
 fi
 
-echo "Create release"
+echo "Create a formal release"
 github-release release \
     --user mauromedda \
     --repo ${REPO} \
-    --tag ${VERSION} \
-    --pre-release
+    --tag ${VERSION}
 
 cd ${BUILD_DIR} && shasum -a 256 * > SHA256SUMS
 

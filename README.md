@@ -26,18 +26,36 @@ It's implemented using [spf13/cobra](https://github.com/spf13/cobra).
 
 The help documentation provided by the different login methods are the native vault messages.
 
-## Install
+## Installation
 
-```bash
+### From source
 
-# TBD
 ```
+go get -u github.com/mauromedda/vauth
+```
+
+### From binary
+
+1. Go to the [releases page](https://github.com/mauromedda/vauth/releases)
+2. Download the binary for your system and put into your `$PATH`
 
 ## Usage
 
-```bash
+### Sample workthrough
 
-# TBD
+```bash
+# Installation
+$ curl -sSLfo vauth https://github.com/mauromedda/vauth/releases/download/v0.1.1/vauth_linux_amd64
+$ chmod 0755 vauth
+$ sudo mv vauth /usr/local/bin/
+
+# Log against vault
+$ export VAULT_ADDR=https://<your_vault_server_address>:8200
+$ vauth login -m userpass username=test password=test
+Success! You are now authenticated. The token information displayed
+below is already stored in the token helper. You do NOT need to run
+"vauth login" again. Future Vault requests will automatically use this token.
+TokenID: s.oXsX8GqsYxyvXmtkjpT8fLhU
 ```
 
 ## Authors
