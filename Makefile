@@ -1,6 +1,6 @@
 .PHONY: all
 
-all: fmt test build
+all: fmt test build release
 # Determine this makefile's path.
 # Be sure to place this BEFORE `include` directives, if any.
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
@@ -8,6 +8,7 @@ THIS_FILE := $(lastword $(MAKEFILE_LIST))
 TEST?=$$(go list ./... | grep -v /vendor/ | grep -v /integ)
 TEST_TIMEOUT?=30m
 EXTENDED_TEST_TIMEOUT=45m
+BUILD_DIR=.build
 
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 GO_VERSION_MIN=1.11
@@ -37,9 +38,9 @@ prep:
 	go get github.com/aktau/github-release
 
 build: prep
-	rm -rf bin/ pkg/
+	rm -rf $(BUILD_DIR)
 	echo => Build the binaries for the follownig OS Windows, Linux and Darwin on x64
-	gox -os="linux darwin windows" -arch="amd64" -output="pkg/{{.OS}}_{{.Arch}}/vauth" -ldflags "-s -w -X main.version=$(shell git describe --tags || git rev-parse --short HEAD || echo dev)" -verbose ./...
+	gox -os="linux darwin windows" -arch="amd64" -output="$(BUILD_DIR)/vauth_{{.OS}}_{{.Arch}}" -ldflags "-s -w -X main.version=$(shell git describe --tags || git rev-parse --short HEAD || echo dev)" -verbose ./...
 
 test:
 	VAULT_ADDR= \

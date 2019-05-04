@@ -1,12 +1,13 @@
-#!/bin/bash
+#!/bin/bash -x
 
 VERSION=$(git describe --tags --exact-match)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
 REPO=$(basename $(pwd))
 ARCHS="linux/amd64 darwin/amd64 windows/amd64"
-
+BUILD_DIR=.build
 set -e
-if [[ -z "${VERSION}" ]]; then
-  echo "No tag present, stopping build now."
+if [[ -z "${VERSION}" ]] ; then
+  echo "No tag present or you are not in the master branch, stopping build now."
   exit 0
 fi
 
@@ -15,12 +16,16 @@ if [[ -z "${GITHUB_TOKEN}" ]]; then
   exit 1
 fi
 
-DEV_PLATFORM=${DEV_PLATFORM:-"./pkg/$(go env GOOS)_$(go env GOARCH)"}
-for F in $(find ${DEV_PLATFORM} -mindepth 1 -maxdepth 1 -type f); do
-    shasum -a 256 ${F}* > $(dirname ${F})/SHA256SUMS
+echo "Create release"
+github-release release \
+    --user mauromedda \
+    --repo ${REPO} \
+    --tag ${VERSION} \
+    --pre-release
+
+cd ${BUILD_DIR} && shasum -a 256 * > SHA256SUMS
+
+for F in *; do
     github-release upload --user mauromedda --repo ${REPO} --tag ${VERSION} --name ${F} --file ${F}
 done
 
-for F in $(find ${DEV_PLATFORM} -mindepth 1 -maxdepth 1 -type f); do
-    github-release upload --user mauromedda --repo ${REPO} --tag ${VERSION} --name ${F} --file ${F}
-done
