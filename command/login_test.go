@@ -5,12 +5,19 @@ import (
 	"context"
 	"fmt"
 	"github.com/hashicorp/vault/api"
+	vt "github.com/mauromedda/vauth/command/token"
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"strings"
 	"testing"
 )
 
-func TestLoginSuccess(t *testing.T) {
+func TestLogin(t *testing.T) {
+	checkLogins := func(t *testing.T, got, want string) {
+		t.Helper()
+		if !strings.Contains(got, want) {
+			t.Errorf("got %q want %q", got, want)
+		}
+	}
 	token := "s6gjRs4pYBO4pyDGyp73e8Zmt"
 	ctx := context.Background()
 	req := testcontainers.ContainerRequest{
@@ -63,16 +70,30 @@ func TestLoginSuccess(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	got := &bytes.Buffer{}
-	if err := Login(client, "userpass", map[string]string{"username": "test", "password": "test"}, got); err != nil {
-		t.Fatal(err)
-	}
-	want := "Success! You are now authenticated."
-	if !strings.Contains(got.String(), want) {
-		t.Errorf("expected %q to be %q", got, want)
-	}
 
-	if err := Login(client, "userpass", map[string]string{"username": "testWrong", "password": "test"}, got); err == nil {
-		t.Fatal("expected login failed but success")
+	loginTest := []struct {
+		name   string
+		method string
+		params map[string]string
+		want   string
+	}{
+		{name: "userpass successful login", method: "userpass", params: map[string]string{"username": "test", "password": "test"}, want: "Success! You are now authenticated."},
+		{name: "userpass wrong login", method: "userpass", params: map[string]string{"username": "testWrong", "password": "test"}, want: "invalid username or password"},
+		{name: "token successful login", method: "token", params: map[string]string{"token": token}, want: "Success! You are now authenticated."},
+		{name: "token wrong login", method: "token", params: map[string]string{"token": "tokenWrong"}, want: "permission denied"},
+	}
+	tokenHelper := vt.InternalTokenHelper{}
+	for _, tt := range loginTest {
+		t.Run(tt.name, func(t *testing.T) {
+			// Erase the token in the local client
+			defer tokenHelper.Erase()
+			got := &bytes.Buffer{}
+			if err := Login(client, tt.method, tt.params, got); err != nil {
+				checkLogins(t, err.Error(), tt.want)
+			} else {
+				checkLogins(t, got.String(), tt.want)
+			}
+
+		})
 	}
 }

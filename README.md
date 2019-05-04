@@ -58,6 +58,12 @@ below is already stored in the token helper. You do NOT need to run
 TokenID: s.oXsX8GqsYxyvXmtkjpT8fLhU
 ```
 
+### From Docker image
+
+```bash
+# Pull the docker image
+```
+
 ## Authors
 
 Currently maintained by [Mauro Medda](https://github.com/mauromedda).
