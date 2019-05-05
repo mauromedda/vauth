@@ -62,6 +62,14 @@ TokenID: s.oXsX8GqsYxyvXmtkjpT8fLhU
 
 ```bash
 # Pull the docker image
+
+$ docker pull mauromedda/vauth
+
+$ docker run -e VAULT_ADDR=https://<your_vault_server_address>:8200 -it mauromedda/vauth login -m userpass username=test password=test
+Success! You are now authenticated. The token information displayed
+below is already stored in the token helper. You do NOT need to run
+"vauth login" again. Future Vault requests will automatically use this token.
+TokenID: s.oXsX8GqsYxyvXmtkjpT8fLhU
 ```
 
 ## Authors
