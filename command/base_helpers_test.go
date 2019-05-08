@@ -146,3 +146,11 @@ func TestPasswordFromEnv(t *testing.T) {
 		})
 	}
 }
+
+func TestEnsureTrailingSlash(t *testing.T) {
+	got := EnsureTrailingSlash("test")
+	want := "test/"
+	if got != want {
+		t.Errorf("got '%s', want '%s'", got, want)
+	}
+}

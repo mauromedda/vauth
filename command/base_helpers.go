@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"io"
 	"os"
+	"strings"
 )
 
 // parseArgsData parses the given args in the format key=value into a map of
@@ -72,4 +73,17 @@ func PasswordFromEnv() string {
 		return password
 	}
 	return ""
+}
+
+// EnsureTrailingSlash ensures the given string has a trailing slash.
+func EnsureTrailingSlash(s string) string {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return ""
+	}
+
+	for len(s) > 0 && s[len(s)-1] != '/' {
+		s = s + "/"
+	}
+	return s
 }

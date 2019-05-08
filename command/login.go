@@ -102,7 +102,10 @@ TokenID: %s
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
-	loginCmd.Flags().StringP("method", "m", "", "Authentication method for Vault")
+	loginCmd.Flags().StringP("method", "m", "token", "Authentication method for Vault")
+	loginCmd.Flags().StringP("path", "p", "", `Remote path in Vault where the auth method is enabled.
+This defaults to the TYPE of method (e.g. userpass -> userpass/).`)
+
 }
 
 var loginCmd = &cobra.Command{
@@ -122,10 +125,18 @@ Valid methods are: aws, ldap, token, userpass, radius, github, okta and cert.
 		if err != nil {
 			return err
 		}
+		authPath, err := cmd.Flags().GetString("path")
+		if err != nil {
+			authPath = EnsureTrailingSlash(method)
+		}
+
 		// Pull the Hashicorp Vault fake stdin if needed
 		stdin := (io.Reader)(os.Stdin)
 		stdout := os.Stdout
-		authConfig, err := parseArgsDataString(stdin, cmd.Flags().Args())
+		authConfig, err := parseArgsDataString(stdin, args[1:])
+		if authConfig["mount"] == "" && authPath != "" {
+			authConfig["mount"] = authPath
+		}
 		if err != nil {
 			return err
 		}

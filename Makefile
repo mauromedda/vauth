@@ -51,3 +51,6 @@ test:
 
 release:
 	./release.sh
+
+clean:
+	rm -rf .build Install Build
