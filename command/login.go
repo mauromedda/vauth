@@ -61,8 +61,10 @@ func Login(client *api.Client, method string, loginConfig map[string]string, out
 		}
 		authConfig = map[string]string{
 			"username": username,
-			"password": password,
 			"method":   method,
+		}
+		if password != "" {
+			authConfig["password"] = password
 		}
 		for k, v := range loginConfig {
 			authConfig[k] = v
